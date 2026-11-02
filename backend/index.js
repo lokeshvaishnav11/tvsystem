@@ -40,8 +40,8 @@ app.get("/sport/:id", async (req, res) => {
             method: "GET",
            headers: {
     Accept: "text/html",
-    Origin: "https://reddyexch777.live",
-    Referer: "https://reddyexch777.live/"
+    Origin: "https://35peti.com",
+    Referer: "https://35peti.com/"
 },
             
         });
@@ -94,8 +94,8 @@ app.get("/cdn-live/cdn-2-m3u8.uhdmovies.online/live/streams/:filename", async (r
         const response = await fetch(url,{
             headers: {
                 Accept: "application/vnd.apple.mpegurl",
-                Origin: "https://reddyexch777.live",
-                Referer: "https://reddyexch777.live/"
+                Origin: "https://35peti.com",
+                Referer: "https://35peti.com/"
             }
         });
        res.status(response.status);
@@ -163,8 +163,8 @@ return res.send(body);
 //         const response = await fetch(url,{
 //             headers: {
 //                 Accept: "application/vnd.apple.mpegurl",
-//                 Origin: "https://reddyexch777.live",
-//                 Referer: "https://reddyexch777.live/"
+//                 Origin: "https://35peti.com",
+//                 Referer: "https://35peti.com/"
 //             }
 //         });
 //         const body = await response.text();
@@ -192,8 +192,8 @@ app.get(
     const response = await fetch(url,{
             headers: {
                 Accept: "application/vnd.apple.mpegurl",
-                Origin: "https://reddyexch777.live",
-                Referer: "https://reddyexch777.live/"
+                Origin: "https://35peti.com",
+                Referer: "https://35peti.com/"
             }
         });
        const buffer = Buffer.from(await response.arrayBuffer());

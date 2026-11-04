@@ -326,6 +326,44 @@ app.use(
 // SPORTS HTML
 // ---------------------------------------------
 
+// app.get("/sport/:id", async (req, res) => {
+//     try {
+//         const id = encodeURIComponent(req.params.id);
+
+//         const url = `${UPSTREAM}/sports-stream?id=${id}`;
+
+//         console.log("Fetching:", url);
+
+//         const response = await fetch(url, {
+//             method: "GET",
+//             headers: {
+//                 Accept: "text/html",
+//                 ...HEADERS
+//             }
+//         });
+
+//         let html = await response.text();
+
+//         html = html.replace(
+//             /httpBaseURL\s*:\s*["'][^"']+["']/,
+//             'httpBaseURL: "https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+//         );
+
+//         return res
+//             .status(response.status)
+//             .type("html")
+//             .send(html);
+
+//     } catch (error) {
+//         console.error("Sports fetch error:", error.message);
+
+//         return res.status(502).send(
+//             "Unable to fetch stream HTML"
+//         );
+//     }
+// });
+
+
 app.get("/sport/:id", async (req, res) => {
     try {
         const id = encodeURIComponent(req.params.id);
@@ -344,9 +382,17 @@ app.get("/sport/:id", async (req, res) => {
 
         let html = await response.text();
 
+        // CONDITION 1: Existing HLS player
         html = html.replace(
             /httpBaseURL\s*:\s*["'][^"']+["']/,
             'httpBaseURL: "https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+        );
+
+        // CONDITION 2: ARTC / AliPlayer HTML
+        // Only replace the hostname in artc:// URLs.
+        html = html.replace(
+            /artc:\/\/stream-cdnx\.uhdmovies\.online(?=\/)/g,
+            "artc://shayam-hd-movies.akamster.com/artc-stream"
         );
 
         return res
@@ -360,6 +406,77 @@ app.get("/sport/:id", async (req, res) => {
         return res.status(502).send(
             "Unable to fetch stream HTML"
         );
+    }
+});
+
+
+const ARTC_HTTP_UPSTREAM = "https://stream-cdnx.uhdmovies.online";
+
+app.post("/artc-stream/*streamPath", async (req, res) => {
+    try {
+        const parts = req.params.streamPath;
+
+        const streamPath = Array.isArray(parts)
+            ? parts.join("/")
+            : String(parts || "");
+
+        if (
+            !streamPath ||
+            streamPath.split("/").some(
+                (part) => part === "." || part === ".."
+            )
+        ) {
+            return res.status(400).send("Invalid stream path");
+        }
+
+        const upstreamUrl = new URL(
+            `/${streamPath}`,
+            ARTC_HTTP_UPSTREAM
+        );
+
+        const headers = {
+            "Content-Type":
+                req.headers["content-type"] ||
+                "application/octet-stream",
+               Accept: "application/octet-stream",
+              Origin: "https://stream-s-43.uhdmovies.online",
+             Referer: "https://stream-s-43.uhdmovies.online/"
+        };
+
+        console.log(upstreamUrl)
+
+        const upstreamResponse = await fetch(upstreamUrl, {
+            method: "POST",
+            headers,
+            body: req,
+            duplex: "half"
+        });
+
+        res.status(upstreamResponse.status);
+
+        res.setHeader(
+            "Content-Type",
+            upstreamResponse.headers.get("content-type") ||
+                "application/octet-stream"
+        );
+
+        if (!upstreamResponse.body) {
+            return res.end();
+        }
+
+        await pipeline(
+            Readable.fromWeb(upstreamResponse.body),
+            res
+        );
+
+    } catch (error) {
+        console.error("ARTC POST error:", error.message);
+
+        if (!res.headersSent) {
+            return res.status(502).send("Upstream error");
+        }
+
+        res.destroy(error);
     }
 });
 

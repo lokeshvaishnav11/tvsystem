@@ -733,7 +733,7 @@ app.get("/p2.php", async (req, res) => {
 
         // Sirf WebSocket aur WebTransport domain replace
         const updatedBody = body.replaceAll(
-            "wss://ws-stream.uhdmovies.online",
+            "wss://ws-casino-stream.uhdmovies.online",
             "wss://shayam-hd-movies.akamster.com/casino-ws"
         );
 

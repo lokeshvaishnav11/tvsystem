@@ -891,7 +891,7 @@ app.get("/p2.php", async (req, res) => {
 
 
 
-const CASINO_WS_UPSTREAM = "wss://ws-stream.uhdmovies.online";
+const CASINO_WS_UPSTREAM = "wss://ws-casino-stream.uhdmovies.online";
 
 const server = http.createServer(app);
 

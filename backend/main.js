@@ -891,261 +891,776 @@ app.get("/p2.php", async (req, res) => {
 
 
 
-const CASINO_WS_UPSTREAM = "wss://ws-casino-stream.uhdmovies.online";
+// const CASINO_WS_UPSTREAM = "wss://ws-casino-stream.uhdmovies.online";
+
+// const server = http.createServer(app);
+
+// const wss = new WebSocket.Server({
+//     noServer: true,
+//     perMessageDeflate: false
+// });
+
+// // =============================================
+// // DYNAMIC WEBSOCKET UPGRADE
+// // =============================================
+
+// server.on("upgrade", (request, socket, head) => {
+//     try {
+//         const incoming = new URL(
+//             request.url,
+//             "https://shayam-hd-movies.akamster.com"
+//         );
+
+//         console.log(incoming,"incoming")
+
+//         // Casino ka route prefix.
+//         // Game name koi bhi ho sakta hai.
+//         const isCasino = incoming.pathname.startsWith("/casino-ws/");
+
+//         // Casino prefix remove karke actual path nikaalo.
+//         const upstreamPath = isCasino
+//             ? incoming.pathname.slice("/casino-ws".length)
+//             : incoming.pathname;
+
+//         // Select upstream dynamically.
+//         const upstreamBase = isCasino
+//             ? CASINO_WS_UPSTREAM
+//             : WS_UPSTREAM;
+
+//         // Original path aur query parameters preserve.
+//         const upstreamUrl = new URL(
+//             upstreamPath + incoming.search,
+//             upstreamBase
+//         );
+
+//         // console.log("==================================");
+//         // console.log("WS Type:", isCasino ? "CASINO" : "NORMAL");
+//         // console.log("Client Path:", incoming.pathname);
+//         // console.log("Upstream:", upstreamUrl.origin);
+//         // console.log("Game Path:", upstreamUrl.pathname);
+//         // console.log("==================================");
+
+//         wss.handleUpgrade(request, socket, head, (client) => {
+//             console.log(
+//                 "Client WebSocket connected:",
+//                 incoming.pathname
+//             );
+
+//             // =====================================
+//             // CONNECT UPSTREAM
+//             // =====================================
+
+//             console.log("Connecting to upstream:", upstreamUrl.href);
+
+//             const upstream = new WebSocket(upstreamUrl.href, {
+//                 perMessageDeflate: false,
+//                 origin: "https://stream-s-43.uhdmovies.online",
+//                 referrer: "https://stream-s-43.uhdmovies.online/",
+//                 handshakeTimeout: 15000
+//             });
+
+//             const pendingMessages = [];
+
+//             // =====================================
+//             // UPSTREAM OPEN
+//             // =====================================
+
+//             upstream.on("open", () => {
+//                 console.log(
+//                     "Upstream connected:",
+//                     upstreamUrl.pathname
+//                 );
+
+//                 for (const message of pendingMessages) {
+//                     if (upstream.readyState !== WebSocket.OPEN) {
+//                         break;
+//                     }
+
+//                     upstream.send(message.data, {
+//                         binary: message.isBinary
+//                     });
+//                 }
+
+//                 pendingMessages.length = 0;
+//             });
+
+//             // =====================================
+//             // UPSTREAM -> CLIENT
+//             // =====================================
+
+//             upstream.on("message", (data, isBinary) => {
+//                 if (client.readyState === WebSocket.OPEN) {
+//                     client.send(data, {
+//                         binary: isBinary
+//                     });
+//                 }
+//             });
+
+//             // =====================================
+//             // CLIENT -> UPSTREAM
+//             // =====================================
+
+//             client.on("message", (data, isBinary) => {
+//                 if (upstream.readyState === WebSocket.OPEN) {
+//                     upstream.send(data, {
+//                         binary: isBinary
+//                     });
+//                 } else if (
+//                     upstream.readyState === WebSocket.CONNECTING
+//                 ) {
+//                     pendingMessages.push({
+//                         data,
+//                         isBinary
+//                     });
+//                 }
+//             });
+
+//             // =====================================
+//             // UPSTREAM UPGRADE SUCCESS
+//             // =====================================
+
+//             upstream.on("upgrade", (response) => {
+//                 console.log(
+//                     "Upstream upgraded:",
+//                     response.statusCode
+//                 );
+//             });
+
+//             // =====================================
+//             // UPSTREAM HTTP REJECTION
+//             // =====================================
+
+//          upstream.on("unexpected-response", (req, response) => {
+//     console.error("\n========== WS UPSTREAM FAILURE ==========");
+
+//     console.error("HTTP Status:", response.statusCode);
+//     console.error("Status Message:", response.statusMessage);
+//     // console.error("Duration:", Date.now() - startedAt, "ms");
+//     console.error("Host:", upstreamUrl.host);
+//     console.error("Path:", upstreamUrl.pathname);
+
+//     console.error("Response Headers:", {
+//         server: response.headers.server,
+//         via: response.headers.via,
+//         "cf-ray": response.headers["cf-ray"],
+//         "cf-cache-status": response.headers["cf-cache-status"],
+//         "content-type": response.headers["content-type"],
+//         "retry-after": response.headers["retry-after"]
+//     });
+
+//     console.error("Request Headers:", {
+//         origin: req.getHeader("origin"),
+//         host: req.getHeader("host"),
+//         upgrade: req.getHeader("upgrade")
+//     });
+
+//     let body = "";
+
+//     response.on("data", (chunk) => {
+//         if (body.length < 4096) {
+//             body += chunk.toString("utf8");
+//         }
+//     });
+
+//     response.on("end", () => {
+//         console.error("Response Body:", body);
+//         console.error("========================================\n");
+
+//         if (client.readyState === WebSocket.OPEN) {
+//             client.close(1011, "Upstream HTTP error");
+//         }
+//     });
+// });
+//             // =====================================
+//             // UPSTREAM ERROR
+//             // =====================================
+
+//             upstream.on("error", (error) => {
+//                 console.error(
+//                     "Upstream WebSocket error:",
+//                     error.message
+//                 );
+
+//                 if (client.readyState === WebSocket.OPEN) {
+//                     client.close(
+//                         1011,
+//                         "Upstream connection failed"
+//                     );
+//                 }
+//             });
+
+//             // =====================================
+//             // CLIENT ERROR
+//             // =====================================
+
+//             client.on("error", (error) => {
+//                 console.error(
+//                     "Client WebSocket error:",
+//                     error.message
+//                 );
+//             });
+
+//             // =====================================
+//             // UPSTREAM CLOSE
+//             // =====================================
+
+//             upstream.on("close", (code, reason) => {
+//                 console.log(
+//                     "Upstream closed:",
+//                     code,
+//                     reason.toString()
+//                 );
+
+//                 pendingMessages.length = 0;
+
+//                 if (client.readyState === WebSocket.OPEN) {
+//                     client.close();
+//                 }
+//             });
+
+//             // =====================================
+//             // CLIENT CLOSE
+//             // =====================================
+
+//             client.on("close", () => {
+//                 console.log(
+//                     "Client disconnected:",
+//                     incoming.pathname
+//                 );
+
+//                 pendingMessages.length = 0;
+
+//                 if (upstream.readyState === WebSocket.CONNECTING) {
+//                     upstream.terminate();
+//                 } else if (upstream.readyState === WebSocket.OPEN) {
+//                     upstream.close();
+//                 }
+//             });
+//         });
+
+//     } catch (error) {
+//         console.error(
+//             "WebSocket upgrade error:",
+//             error.message
+//         );
+
+//         socket.destroy();
+//     }
+// });
+
+
+
+const CASINO_WS_UPSTREAM = "wss://tv.777exch.live/proxy/ws-casino";
+
+
 
 const server = http.createServer(app);
 
+
+
 const wss = new WebSocket.Server({
+
     noServer: true,
+
     perMessageDeflate: false
+
 });
 
-// =============================================
-// DYNAMIC WEBSOCKET UPGRADE
+
+
 // =============================================
 
+// DYNAMIC WEBSOCKET UPGRADE
+
+// =============================================
+
+
+
 server.on("upgrade", (request, socket, head) => {
+
     try {
+
         const incoming = new URL(
+
             request.url,
-            "https://shayam-hd-movies.akamster.com"
+
+            "http://localhost:5000"
+
         );
+
+
 
         console.log(incoming,"incoming")
 
+
+
         // Casino ka route prefix.
+
         // Game name koi bhi ho sakta hai.
+
         const isCasino = incoming.pathname.startsWith("/casino-ws/");
 
+
+
         // Casino prefix remove karke actual path nikaalo.
+
         const upstreamPath = isCasino
+
             ? incoming.pathname.slice("/casino-ws".length)
+
             : incoming.pathname;
 
+        console.log("Upstream Path:", upstreamPath);
+
         // Select upstream dynamically.
+
         const upstreamBase = isCasino
+
             ? CASINO_WS_UPSTREAM
+
             : WS_UPSTREAM;
 
+
+        console.log("Upstream Base:", upstreamBase);
         // Original path aur query parameters preserve.
-        const upstreamUrl = new URL(
-            upstreamPath + incoming.search,
-            upstreamBase
-        );
+
+        const upstreamUrl = new URL(upstreamBase);
+
+upstreamUrl.pathname =
+    upstreamUrl.pathname.replace(/\/$/, "") +
+    "/" +
+    upstreamPath.replace(/^\/+/, "");
+
+upstreamUrl.search = incoming.search;
+
+
 
         // console.log("==================================");
+
         // console.log("WS Type:", isCasino ? "CASINO" : "NORMAL");
+
         // console.log("Client Path:", incoming.pathname);
+
         // console.log("Upstream:", upstreamUrl.origin);
+
         // console.log("Game Path:", upstreamUrl.pathname);
+
         // console.log("==================================");
+
+
 
         wss.handleUpgrade(request, socket, head, (client) => {
+
             console.log(
+
                 "Client WebSocket connected:",
+
                 incoming.pathname
+
             );
 
-            // =====================================
-            // CONNECT UPSTREAM
+
+
             // =====================================
 
-            console.log("Connecting to upstream:", upstreamUrl.href);
+            // CONNECT UPSTREAM
+
+            // =====================================
+
+
+
+            console.log("Connecting to upstream:", upstreamUrl);
+
+
 
             const upstream = new WebSocket(upstreamUrl.href, {
+
                 perMessageDeflate: false,
-                origin: "https://stream-s-43.uhdmovies.online",
-                referrer: "https://stream-s-43.uhdmovies.online/",
+
+                origin: "https://tv.777exch.live",
+
+                referrer: "https://tv.777exch.live/",
+
                 handshakeTimeout: 15000
+
             });
+
+
 
             const pendingMessages = [];
 
+
+
             // =====================================
+
             // UPSTREAM OPEN
+
             // =====================================
+
+
 
             upstream.on("open", () => {
+
                 console.log(
+
                     "Upstream connected:",
+
                     upstreamUrl.pathname
+
                 );
+
+
 
                 for (const message of pendingMessages) {
+
                     if (upstream.readyState !== WebSocket.OPEN) {
+
                         break;
+
                     }
 
+
+
                     upstream.send(message.data, {
+
                         binary: message.isBinary
+
                     });
+
                 }
+
+
 
                 pendingMessages.length = 0;
+
             });
 
+
+
             // =====================================
+
             // UPSTREAM -> CLIENT
+
             // =====================================
+
+
 
             upstream.on("message", (data, isBinary) => {
+
                 if (client.readyState === WebSocket.OPEN) {
+
                     client.send(data, {
+
                         binary: isBinary
+
                     });
+
                 }
+
             });
 
+
+
             // =====================================
+
             // CLIENT -> UPSTREAM
+
             // =====================================
+
+
 
             client.on("message", (data, isBinary) => {
+
                 if (upstream.readyState === WebSocket.OPEN) {
+
                     upstream.send(data, {
+
                         binary: isBinary
+
                     });
+
                 } else if (
+
                     upstream.readyState === WebSocket.CONNECTING
+
                 ) {
+
                     pendingMessages.push({
+
                         data,
+
                         isBinary
+
                     });
+
                 }
+
             });
 
+
+
             // =====================================
+
             // UPSTREAM UPGRADE SUCCESS
+
             // =====================================
+
+
 
             upstream.on("upgrade", (response) => {
+
                 console.log(
+
                     "Upstream upgraded:",
+
                     response.statusCode
+
                 );
+
             });
 
+
+
             // =====================================
+
             // UPSTREAM HTTP REJECTION
+
             // =====================================
+
+
 
          upstream.on("unexpected-response", (req, response) => {
+
     console.error("\n========== WS UPSTREAM FAILURE ==========");
 
+
+
     console.error("HTTP Status:", response.statusCode);
+
     console.error("Status Message:", response.statusMessage);
+
     // console.error("Duration:", Date.now() - startedAt, "ms");
+
     console.error("Host:", upstreamUrl.host);
+
     console.error("Path:", upstreamUrl.pathname);
 
+
+
     console.error("Response Headers:", {
+
         server: response.headers.server,
+
         via: response.headers.via,
+
         "cf-ray": response.headers["cf-ray"],
+
         "cf-cache-status": response.headers["cf-cache-status"],
+
         "content-type": response.headers["content-type"],
+
         "retry-after": response.headers["retry-after"]
+
     });
 
+
+
     console.error("Request Headers:", {
+
         origin: req.getHeader("origin"),
+
         host: req.getHeader("host"),
+
         upgrade: req.getHeader("upgrade")
+
     });
+
+
 
     let body = "";
 
+
+
     response.on("data", (chunk) => {
+
         if (body.length < 4096) {
+
             body += chunk.toString("utf8");
+
         }
+
     });
+
+
 
     response.on("end", () => {
+
         console.error("Response Body:", body);
+
         console.error("========================================\n");
 
+
+
         if (client.readyState === WebSocket.OPEN) {
+
             client.close(1011, "Upstream HTTP error");
+
         }
+
     });
+
 });
+
             // =====================================
+
             // UPSTREAM ERROR
+
             // =====================================
+
+
 
             upstream.on("error", (error) => {
+
                 console.error(
+
                     "Upstream WebSocket error:",
+
                     error.message
+
                 );
 
+
+
                 if (client.readyState === WebSocket.OPEN) {
+
                     client.close(
+
                         1011,
+
                         "Upstream connection failed"
+
                     );
+
                 }
+
             });
 
+
+
             // =====================================
+
             // CLIENT ERROR
+
             // =====================================
+
+
 
             client.on("error", (error) => {
+
                 console.error(
+
                     "Client WebSocket error:",
+
                     error.message
+
                 );
+
             });
 
+
+
             // =====================================
+
             // UPSTREAM CLOSE
+
             // =====================================
+
+
 
             upstream.on("close", (code, reason) => {
+
                 console.log(
+
                     "Upstream closed:",
+
                     code,
+
                     reason.toString()
+
                 );
 
+
+
                 pendingMessages.length = 0;
+
+
 
                 if (client.readyState === WebSocket.OPEN) {
+
                     client.close();
+
                 }
+
             });
 
-            // =====================================
-            // CLIENT CLOSE
+
+
             // =====================================
 
+            // CLIENT CLOSE
+
+            // =====================================
+
+
+
             client.on("close", () => {
+
                 console.log(
+
                     "Client disconnected:",
+
                     incoming.pathname
+
                 );
+
+
 
                 pendingMessages.length = 0;
 
+
+
                 if (upstream.readyState === WebSocket.CONNECTING) {
+
                     upstream.terminate();
+
                 } else if (upstream.readyState === WebSocket.OPEN) {
+
                     upstream.close();
+
                 }
+
             });
+
         });
 
+
+
     } catch (error) {
+
         console.error(
+
             "WebSocket upgrade error:",
+
             error.message
+
         );
 
+
+
         socket.destroy();
+
     }
+
 });
 
 

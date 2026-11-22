@@ -104,7 +104,7 @@
 
 //     /httpBaseURL\s*:\s*["'][^"']+["']/,
 
-//     'httpBaseURL: "https://https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+//     'httpBaseURL: "https://http://localhost:5000/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
 
 // );
 
@@ -474,7 +474,7 @@
 
 //             "wss://ws-casino-stream.uhdmovies.online",
 
-//             "ws://https://shayam-hd-movies.akamster.com"
+//             "ws://http://localhost:5000"
 
 //         );
 
@@ -486,7 +486,7 @@
 
 //             "https://ws-casino-stream.uhdmovies.online",
 
-//             "https://https://shayam-hd-movies.akamster.com"
+//             "https://http://localhost:5000"
 
 //         );
 
@@ -661,10 +661,10 @@ app.use(
 // DOMAIN SECURITY - SPORTS / CASINO HTML ONLY
 // =============================================
 const ALLOWED_DOMAINS = new Set([
-  "https://shayam-hd-movies.akamster.com", "127.0.0.1", "yourdomain.com", "www.yourdomain.com",
+  "http://localhost:5000", "127.0.0.1", "yourdomain.com", "www.yourdomain.com",
   "six-run.com", "sixrun.pro", "admin.six-run.com", "admin.sixrun.pro",
   "goexch9.uk", "star-99.com", "admin.star-99.com",
-  "betx99.co", "admin.betx99.co", "nataraj9.com","khelmantra007.com"
+  "betx99.co", "admin.betx99.co", "nataraj9.com","khelmantra007.com",
 ]);
 
 const domainErrorHTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Domain Not Whitelisted</title></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;text-align:center;background:#fff;color:#111"><div><h1>Domain Not Whitelisted</h1><p>Contact Your Vendor</p></div></body></html>`;
@@ -718,7 +718,7 @@ function injectDomainGuard(html, allowedOrigin) {
     : guard + html;
 }
 
-app.use(["/sport/:id", "/casino/:id"], domainSecurity);
+// app.use(["/sport/:id", "/casino/:id"], domainSecurity);
 
 // SPORTS HTML
 
@@ -766,7 +766,7 @@ app.use(["/sport/:id", "/casino/:id"], domainSecurity);
 
 //             /httpBaseURL\s*:\s*["'][^"']+["']/,
 
-//             'httpBaseURL: "https://https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+//             'httpBaseURL: "https://http://localhost:5000/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
 
 //         );
 
@@ -844,7 +844,7 @@ app.get("/sport/:id", async (req, res) => {
 
             /httpBaseURL\s*:\s*["'][^"']+["']/,
 
-            'httpBaseURL: "https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+            'httpBaseURL: "http://localhost:5000/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
 
         );
 
@@ -1349,7 +1349,7 @@ app.get("/casino/:id", async (req, res) => {
 
             "https://ws-casino-stream.uhdmovies.online",
 
-            "https://shayam-hd-movies.akamster.com"
+            "http://localhost:5000"
 
         );
 
@@ -1535,7 +1535,7 @@ app.get("/p2.php", async (req, res) => {
 
             "wss://ws-casino-stream.uhdmovies.online",
 
-            "wss://shayam-hd-movies.akamster.com/casino-ws"
+            "ws://localhost:5000/casino-ws"
 
         );
 
@@ -1599,7 +1599,7 @@ app.get("/p2.php", async (req, res) => {
 
 //             request.url,
 
-//             `https://https://shayam-hd-movies.akamster.com`
+//             `https://http://localhost:5000`
 
 //         );
 
@@ -1847,7 +1847,7 @@ app.get("/p2.php", async (req, res) => {
 
 
 
-const CASINO_WS_UPSTREAM = "wss://ws-casino-stream.uhdmovies.online";
+const CASINO_WS_UPSTREAM = "wss://tv.777exch.live/proxy/ws-casino";
 
 
 
@@ -1881,7 +1881,7 @@ server.on("upgrade", (request, socket, head) => {
 
             request.url,
 
-            "https://shayam-hd-movies.akamster.com"
+            "http://localhost:5000"
 
         );
 
@@ -1907,7 +1907,7 @@ server.on("upgrade", (request, socket, head) => {
 
             : incoming.pathname;
 
-
+        console.log("Upstream Path:", upstreamPath);
 
         // Select upstream dynamically.
 
@@ -1918,16 +1918,17 @@ server.on("upgrade", (request, socket, head) => {
             : WS_UPSTREAM;
 
 
-
+        console.log("Upstream Base:", upstreamBase);
         // Original path aur query parameters preserve.
 
-        const upstreamUrl = new URL(
+        const upstreamUrl = new URL(upstreamBase);
 
-            upstreamPath + incoming.search,
+upstreamUrl.pathname =
+    upstreamUrl.pathname.replace(/\/$/, "") +
+    "/" +
+    upstreamPath.replace(/^\/+/, "");
 
-            upstreamBase
-
-        );
+upstreamUrl.search = incoming.search;
 
 
 
@@ -1965,7 +1966,7 @@ server.on("upgrade", (request, socket, head) => {
 
 
 
-            console.log("Connecting to upstream:", upstreamUrl.href);
+            console.log("Connecting to upstream:", upstreamUrl);
 
 
 
@@ -1973,9 +1974,9 @@ server.on("upgrade", (request, socket, head) => {
 
                 perMessageDeflate: false,
 
-                origin: "https://stream-s-43.uhdmovies.online",
+                origin: "https://tv.777exch.live",
 
-                referrer: "https://stream-s-43.uhdmovies.online/",
+                referrer: "https://tv.777exch.live/",
 
                 handshakeTimeout: 15000
 

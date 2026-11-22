@@ -104,7 +104,7 @@
 
 //     /httpBaseURL\s*:\s*["'][^"']+["']/,
 
-//     'httpBaseURL: "https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+//     'httpBaseURL: "https://https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
 
 // );
 
@@ -474,7 +474,7 @@
 
 //             "wss://ws-casino-stream.uhdmovies.online",
 
-//             "ws://localhost:5000"
+//             "ws://https://shayam-hd-movies.akamster.com"
 
 //         );
 
@@ -486,7 +486,7 @@
 
 //             "https://ws-casino-stream.uhdmovies.online",
 
-//             "https://shayam-hd-movies.akamster.com"
+//             "https://https://shayam-hd-movies.akamster.com"
 
 //         );
 
@@ -661,7 +661,7 @@ app.use(
 // DOMAIN SECURITY - SPORTS / CASINO HTML ONLY
 // =============================================
 const ALLOWED_DOMAINS = new Set([
-  "localhost", "127.0.0.1", "yourdomain.com", "www.yourdomain.com",
+  "https://shayam-hd-movies.akamster.com", "127.0.0.1", "yourdomain.com", "www.yourdomain.com",
   "six-run.com", "sixrun.pro", "admin.six-run.com", "admin.sixrun.pro",
   "goexch9.uk", "star-99.com", "admin.star-99.com",
   "betx99.co", "admin.betx99.co", "nataraj9.com","khelmantra007.com"
@@ -672,6 +672,7 @@ const domainErrorHTML = `<!doctype html><html><head><meta charset="utf-8"><meta 
 function domainSecurity(req, res, next) {
   try {
     const referer = req.get("referer");
+    // console.log("Referer:", referer);
     if (!referer) return res.status(403).type("html").send(domainErrorHTML);
     const parsed = new URL(referer);
     const hostname = parsed.hostname.toLowerCase();
@@ -765,7 +766,7 @@ app.use(["/sport/:id", "/casino/:id"], domainSecurity);
 
 //             /httpBaseURL\s*:\s*["'][^"']+["']/,
 
-//             'httpBaseURL: "https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
+//             'httpBaseURL: "https://https://shayam-hd-movies.akamster.com/cdn-live/cdn-2-m3u8.uhdmovies.online/live"'
 
 //         );
 
@@ -1056,11 +1057,11 @@ app.get(
 
 
 
-            if (!/^[\w-]+\\.m3u8$/.test(filename)) {
+            // if (!/^[\w-]+\\.m3u8$/.test(filename)) {
 
-                return res.status(400).send("Invalid filename");
+            //     return res.status(400).send("Invalid filename");
 
-            }
+            // }
 
 
 
@@ -1338,7 +1339,7 @@ app.get("/casino/:id", async (req, res) => {
 
             "wss://ws-casino-stream.uhdmovies.online",
 
-            "wss://shayam-hd-movies.akamster.com"
+            "wss:/shayam-hd-movies.akamster.com"
 
         );
 
@@ -1598,7 +1599,7 @@ app.get("/p2.php", async (req, res) => {
 
 //             request.url,
 
-//             `https://shayam-hd-movies.akamster.com`
+//             `https://https://shayam-hd-movies.akamster.com`
 
 //         );
 

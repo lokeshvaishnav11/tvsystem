@@ -37,7 +37,7 @@
             void 0 === (i = function(e, t, n, r, i, a, o) {
                 "use strict";
                 function s(i) {
-                    var a, s, l, c, f = !1, E = i.source.group, p = "http://localhost:5000/p2.php?url=https://bintu.nanocosmos.de", m = {
+                    var a, s, l, c, f = !1, E = i.source.group, p = "https://shayam-hd-movies.akamster.com/p2.php?url=https://bintu.nanocosmos.de", m = {
                         profile: "player"
                     };
                     (window.NANOPLAYER_EXTRA_ID) && (m.id = window.NANOPLAYER_EXTRA_ID);
